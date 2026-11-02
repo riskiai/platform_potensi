@@ -1,0 +1,27 @@
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.docker.example
+
+# Dependencies
+**/node_modules/
+**/vendor/
+
+# Builds & output
+**/dist/
+**/build/
+
+# Laravel storage & cache
+potensi_backend/storage/*.key
+potensi_backend/storage/logs/*.log
+potensi_backend/bootstrap/cache/*.php
+!potensi_backend/bootstrap/cache/.gitignore
+!potensi_backend/storage/logs/.gitignore
+
+# System & Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
