@@ -14,3 +14,8 @@ Route::get('/ping', function () {
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::get('aplod_data', function (Request  $request){
+
+});
+
