@@ -1,5 +1,30 @@
+# =============================================================
+# POTENSI Frontend — hanya source code yang masuk repo
+# =============================================================
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+build/
+*.tsbuildinfo
+
+# Cache tooling (Vite, ESLint/Oxlint, test coverage)
+.vite/
+.cache/
+.eslintcache
+coverage/
+
+# Environment — hanya .env.example yang di-commit
+.env
+.env.*
+!.env.example
+*.local
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,16 +32,22 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Aset desain mentah (logo resolusi asli).
+# Versi yang dipakai aplikasi sudah ada di src/assets/brand & public/.
+POTENSI ELEMENT LOGO/
 
-# Editor directories and files
+# AI / tool lokal
+.claude/
+.cursor/
+.windsurf/
+
+# Editor & OS
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
+Thumbs.db
+desktop.ini
 *.suo
 *.ntvs*
 *.njsproj
