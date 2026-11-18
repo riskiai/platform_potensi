@@ -1,0 +1,106 @@
+import { createBrowserRouter, type RouteObject } from 'react-router-dom'
+import { ROUTES } from '@/constants/routes'
+import type { UserRole } from '@/types/auth'
+import { DashboardLayout } from '@/components/layout/DashboardLayout'
+import { PublicLayout } from '@/components/layout/PublicLayout'
+import { LandingPage } from '@/features/landing/pages/LandingPage'
+import { RegisterInstitutionPage } from '@/features/registration/pages/RegisterInstitutionPage'
+import { RegistrationStatusPage } from '@/features/registration/pages/RegistrationStatusPage'
+import { NAVIGATION } from '@/components/layout/navigation'
+import { ComingSoonPage } from '@/components/shared/ComingSoonPage'
+import { NotFoundPage } from '@/components/shared/NotFoundPage'
+import { RouteErrorPage } from '@/components/shared/RouteErrorPage'
+import { GuestRoute, ProtectedRoute } from '@/features/auth/components/RouteGuards'
+import { LoginPage } from '@/features/auth/pages/LoginPage'
+import { ROLE_HOME } from '@/features/auth/lib/role-home'
+import { ModulePlaceholder } from '@/features/dashboard/pages/ModulePlaceholder'
+
+/** Fase pengerjaan tiap role — hanya untuk teks placeholder. */
+const ROLE_PHASE: Record<UserRole, string> = {
+  platform_owner: 'Fase 4',
+  institution_admin: 'Fase 5–6',
+  participant: 'Fase 7',
+}
+
+/**
+ * Route dashboard dibuat dari konfigurasi NAVIGATION.
+ * Saat halaman asli selesai, ganti `ModulePlaceholder` di `PAGE_OVERRIDES`.
+ */
+const PAGE_OVERRIDES: Partial<Record<string, RouteObject['element']>> = {
+  // contoh: [ROUTES.admin.programs]: <ProgramListPage />,
+}
+
+function roleRoutes(role: UserRole): RouteObject {
+  const home = ROLE_HOME[role]
+  const items = NAVIGATION[role].flatMap((g) => g.items)
+  return {
+    element: <ProtectedRoute allow={[role]} />,
+    children: [
+      {
+        path: home,
+        element: <DashboardLayout />,
+        children: items.map((item) =>
+          item.path === home
+            ? { index: true, element: PAGE_OVERRIDES[item.path] ?? <ModulePlaceholder title="Dashboard" phase={ROLE_PHASE[role]} /> }
+            : {
+                path: item.path.slice(home.length + 1),
+                handle: { crumb: item.label },
+                element: PAGE_OVERRIDES[item.path] ?? <ModulePlaceholder title={item.label} phase={ROLE_PHASE[role]} />,
+              },
+        ),
+      },
+    ],
+  }
+}
+
+export const router = createBrowserRouter([
+  { errorElement: <RouteErrorPage />, children: appRoutes() },
+])
+
+function appRoutes(): RouteObject[] {
+  return [
+  // Halaman publik (navbar + footer)
+  {
+    element: <PublicLayout />,
+    children: [
+      { path: ROUTES.home, element: <LandingPage /> },
+      { path: ROUTES.registerInstitution, element: <RegisterInstitutionPage /> },
+      { path: ROUTES.registrationStatus, element: <RegistrationStatusPage /> },
+    ],
+  },
+
+  {
+    element: <GuestRoute />,
+    children: [{ path: ROUTES.login, element: <LoginPage /> }],
+  },
+
+  { path: ROUTES.forgotPassword, element: <ComingSoonPage title="Lupa Kata Sandi" /> },
+
+  roleRoutes('platform_owner'),
+  roleRoutes('institution_admin'),
+  roleRoutes('participant'),
+
+  // Galeri komponen — hanya saat development.
+  ...(import.meta.env.DEV
+    ? [
+        {
+          element: <ProtectedRoute />,
+          children: [
+            {
+              element: <DashboardLayout />,
+              children: [
+                {
+                  path: ROUTES.uiKit,
+                  handle: { crumb: 'UI Kit' },
+                  lazy: async () => ({ Component: (await import('@/features/dev/pages/UiKitPage')).UiKitPage }),
+                },
+              ],
+            },
+          ],
+        },
+      ]
+    : []),
+
+  { path: '*', element: <NotFoundPage /> },
+  ]
+}
