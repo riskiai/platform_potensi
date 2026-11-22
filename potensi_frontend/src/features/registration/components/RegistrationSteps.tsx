@@ -78,25 +78,22 @@ export function InstitutionStep() {
       </FormField>
 
       <FormField id="inst-province" label="Provinsi" required error={e?.province?.message}>
-        <Controller
-          control={control}
-          name="institution.province"
-          render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger id="inst-province" aria-invalid={!!e?.province || undefined} onBlur={field.onBlur}>
-                <SelectValue placeholder="Pilih provinsi" />
-              </SelectTrigger>
-              <SelectContent>
-                {PROVINCES.map((p) => (
-                  <SelectItem key={p} value={p}>
-                    {p}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+        <Input
+          id="inst-province"
+          list="inst-province-options"
+          placeholder="Ketik atau pilih provinsi"
+          autoComplete="off"
+          aria-required="true"
+          {...register('institution.province', {
+            setValueAs: (text: string) => PROVINCES.find(
+              province => province.toLowerCase() === text.trim().toLowerCase(),
+            ) ?? text.trim(),
+          })}
         />
       </FormField>
+      <datalist id="inst-province-options">
+        {PROVINCES.map(province => <option key={province} value={province} />)}
+      </datalist>
     </div>
   )
 }

@@ -2,14 +2,27 @@ import { tokenStorage } from '@/lib/token-storage'
 import type { AuthService } from '@/services/auth.service'
 import type { ApiError } from '@/types/api'
 import { MOCK_PASSWORD, MOCK_USERS } from './fixtures/users'
+import { mockTenantStatus } from './owner.mock'
+import { registrations } from './registration.mock'
 import { delay } from './utils'
 
 const TOKEN_PREFIX = 'mock-token:'
 
+function users() {
+  const admins = registrations().filter(item => item.status === 'approved' && mockTenantStatus(item.registrationNumber, 'active') === 'active').map(item => ({
+    id: 'admin-' + item.registrationNumber,
+    role: 'institution_admin' as const,
+    name: item.details?.admin.fullName ?? item.institutionName,
+    institutionName: item.institutionName,
+    email: item.email,
+  }))
+  return [...MOCK_USERS, ...admins]
+}
+
 export const authMockService: AuthService = {
   async login({ identifier, password }) {
     await delay()
-    const user = MOCK_USERS.find((u) => u.email.toLowerCase() === identifier.trim().toLowerCase())
+    const user = users().find((u) => u.email.toLowerCase() === identifier.trim().toLowerCase())
     if (!user || password !== MOCK_PASSWORD) {
       throw { status: 401, message: 'Email/nomor induk atau kata sandi salah.' } satisfies ApiError
     }
@@ -19,7 +32,7 @@ export const authMockService: AuthService = {
   async me() {
     await delay(300)
     const token = tokenStorage.get()
-    const user = MOCK_USERS.find((u) => token === TOKEN_PREFIX + u.id)
+    const user = users().find((u) => token === TOKEN_PREFIX + u.id)
     if (!user) throw { status: 401, message: 'Sesi berakhir. Silakan masuk kembali.' } satisfies ApiError
     return user
   },

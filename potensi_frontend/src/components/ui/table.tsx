@@ -1,12 +1,21 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 
-export function Table({ className, ...props }: React.ComponentProps<'table'>) {
+type TableProps = React.ComponentProps<'table'> & {
+  containerClassName?: string
+  containerProps?: React.ComponentProps<'div'>
+}
+
+export function Table({ className, containerClassName, containerProps, ...props }: TableProps) {
   return (
-    <div className="relative w-full overflow-x-auto">
+    <div className={cn('relative w-full overflow-x-auto', containerClassName)} {...containerProps}>
       <table className={cn('w-full caption-bottom text-sm', className)} {...props} />
     </div>
   )
+}
+
+export function TableCaption({ className, ...props }: React.ComponentProps<'caption'>) {
+  return <caption className={cn('sr-only', className)} {...props} />
 }
 
 export function TableHeader({ className, ...props }: React.ComponentProps<'thead'>) {
@@ -28,6 +37,7 @@ export function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
         'h-11 px-4 text-left align-middle text-xs font-semibold tracking-wide whitespace-nowrap text-muted-foreground uppercase',
         className,
       )}
+      scope={props.scope ?? 'col'}
       {...props}
     />
   )

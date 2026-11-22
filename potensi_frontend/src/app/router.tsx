@@ -26,8 +26,12 @@ const ROLE_PHASE: Record<UserRole, string> = {
  * Route dashboard dibuat dari konfigurasi NAVIGATION.
  * Saat halaman asli selesai, ganti `ModulePlaceholder` di `PAGE_OVERRIDES`.
  */
-const PAGE_OVERRIDES: Partial<Record<string, RouteObject['element']>> = {
-  // contoh: [ROUTES.admin.programs]: <ProgramListPage />,
+const PAGE_LAZY: Partial<Record<string, NonNullable<RouteObject['lazy']>>> = {
+  [ROUTES.owner.dashboard]: async () => ({ Component: (await import('@/features/owner/pages/OwnerDashboardPage')).OwnerDashboardPage }),
+  [ROUTES.owner.institutionRequests]: async () => ({ Component: (await import('@/features/owner/pages/InstitutionRequestsPage')).InstitutionRequestsPage }),
+  [ROUTES.owner.institutions]: async () => ({ Component: (await import('@/features/owner/pages/InstitutionsPage')).InstitutionsPage }),
+  [ROUTES.owner.monitoring]: async () => ({ Component: (await import('@/features/owner/pages/MonitoringPage')).MonitoringPage }),
+  [ROUTES.owner.profile]: async () => ({ Component: (await import('@/features/owner/pages/OwnerProfilePage')).OwnerProfilePage }),
 }
 
 function roleRoutes(role: UserRole): RouteObject {
@@ -39,15 +43,27 @@ function roleRoutes(role: UserRole): RouteObject {
       {
         path: home,
         element: <DashboardLayout />,
-        children: items.map((item) =>
-          item.path === home
-            ? { index: true, element: PAGE_OVERRIDES[item.path] ?? <ModulePlaceholder title="Dashboard" phase={ROLE_PHASE[role]} /> }
-            : {
-                path: item.path.slice(home.length + 1),
-                handle: { crumb: item.label },
-                element: PAGE_OVERRIDES[item.path] ?? <ModulePlaceholder title={item.label} phase={ROLE_PHASE[role]} />,
-              },
-        ),
+        children: [
+          ...items.map((item) => {
+            const lazyPage = PAGE_LAZY[item.path]
+            return item.path === home
+              ? lazyPage
+                ? { index: true as const, lazy: lazyPage }
+                : { index: true as const, element: <ModulePlaceholder title="Dashboard" phase={ROLE_PHASE[role]} /> }
+              : {
+                  path: item.path.slice(home.length + 1),
+                  handle: { crumb: item.label },
+                  ...(lazyPage ? { lazy: lazyPage } : { element: <ModulePlaceholder title={item.label} phase={ROLE_PHASE[role]} /> }),
+                }
+          }),
+          ...(role === 'platform_owner'
+            ? [{
+                path: 'institusi/:tenantId',
+                handle: { crumb: 'Detail Institusi' },
+                lazy: async () => ({ Component: (await import('@/features/owner/pages/InstitutionDetailPage')).InstitutionDetailPage }),
+              }]
+            : []),
+        ],
       },
     ],
   }

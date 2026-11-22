@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useId, type ReactNode } from 'react'
 import {
   flexRender,
   getCoreRowModel,
@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { Pagination, type PaginationProps } from './Pagination'
 import { EmptyState, ErrorState } from './states'
@@ -29,6 +29,7 @@ interface DataTableProps<T> {
   getRowId?: (row: T) => string
   onRowClick?: (row: T) => void
   className?: string
+  caption?: string
 }
 
 /**
@@ -49,7 +50,9 @@ export function DataTable<T>({
   getRowId,
   onRowClick,
   className,
+  caption = 'Tabel data',
 }: DataTableProps<T>) {
+  const captionId = useId()
   const table = useReactTable({
     data: data ?? [],
     columns,
@@ -106,7 +109,12 @@ export function DataTable<T>({
 
   return (
     <div className={cn('overflow-hidden rounded-2xl border border-border/70 bg-surface shadow-card', className)}>
-      <Table aria-busy={isLoading || undefined}>
+      <Table
+        aria-busy={isLoading || undefined}
+        className="min-w-[680px]"
+        containerProps={{ tabIndex: 0, role: 'region', 'aria-labelledby': captionId }}
+      >
+        <TableCaption id={captionId}>{caption}</TableCaption>
         <TableHeader>
           {table.getHeaderGroups().map((hg) => (
             <TableRow key={hg.id} className="hover:bg-transparent">

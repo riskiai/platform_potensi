@@ -164,7 +164,7 @@ function StatusDetail({ data }: { data: RegistrationStatusResult }) {
         <Alert variant="success">
           <LogIn aria-hidden />
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-            <p>Institusi Anda telah disetujui. Silakan masuk dengan akun Admin Institusi yang dikirim ke email.</p>
+            <p>Institusi Anda telah disetujui. Masuk dengan email penanggung jawab.{env.useMock && ' Kata sandi demo: password.'}</p>
             <Button asChild size="sm" className="shrink-0">
               <Link to={ROUTES.login}>
                 Masuk <ArrowRight aria-hidden />

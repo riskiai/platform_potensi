@@ -10,19 +10,18 @@ export interface AuthService {
   logout(): Promise<void>
 }
 
-/**
- * ⚠️ Endpoint & bentuk respons di bawah masih ASUMSI.
- * Saat kontrak backend final, cukup ubah path & fungsi adapter di file ini.
- */
 const ENDPOINTS = {
-  login: '/auth/login',
-  me: '/auth/me',
-  logout: '/auth/logout',
+  login: '/login',
+  me: '/me',
+  logout: '/logout',
 } as const
 
 const authHttpService: AuthService = {
   async login(payload) {
-    const { data } = await apiClient.post(ENDPOINTS.login, payload)
+    const { data } = await apiClient.post(ENDPOINTS.login, {
+      email: payload.identifier,
+      password: payload.password,
+    })
     return adaptSession(data)
   },
   async me() {
@@ -37,11 +36,33 @@ const authHttpService: AuthService = {
 // --- Adapter: ubah respons mentah backend → tipe frontend ---------------------
 function adaptSession(raw: unknown): AuthSession {
   const body = unwrap(raw) as { token: string; user: unknown }
+  if (!body || typeof body.token !== 'string' || !body.user) {
+    throw new Error('Respons login backend tidak sesuai kontrak.')
+  }
   return { token: body.token, user: adaptUser(body.user) }
 }
 
 function adaptUser(raw: unknown): AuthUser {
-  return unwrap(raw) as AuthUser
+  const body = unwrap(raw)
+  if (!body || typeof body !== 'object') throw new Error('Respons profil backend tidak valid.')
+  const user = body as { id?: string | number; name?: string; email?: string; role?: string; company?: string | null }
+  const roles: Record<string, AuthUser['role']> = {
+    owner: 'platform_owner',
+    admin: 'institution_admin',
+    admin_external: 'institution_admin',
+    participant: 'participant',
+  }
+  const role = user.role ? roles[user.role] : undefined
+  if (user.id === undefined || !user.name || !user.email || !role) {
+    throw new Error('Profil backend memiliki field yang belum dikenali.')
+  }
+  return {
+    id: String(user.id),
+    name: user.name,
+    email: user.email,
+    role,
+    ...(user.company ? { institutionName: user.company } : {}),
+  }
 }
 
 /** Banyak API membungkus respons di `{ data: ... }`. */
