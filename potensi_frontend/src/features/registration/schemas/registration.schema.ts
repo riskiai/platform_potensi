@@ -1,3 +1,4 @@
+import { PROVINCES } from '@/constants/indonesia'
 import { z } from 'zod'
 import type { InstitutionType } from '@/types/registration'
 
@@ -34,7 +35,7 @@ export const registrationSchema = z.object({
       .refine((v) => v === '' || URL_RE.test(v), 'URL harus diawali http:// atau https://'),
     address: requiredText('Alamat', 10),
     city: requiredText('Kota/Kabupaten'),
-    province: z.string().min(1, 'Pilih provinsi.'),
+    province: z.string().refine(value => PROVINCES.some(province => province === value), 'Pilih provinsi dari daftar yang tersedia.'),
   }),
   admin: z.object({
     fullName: requiredText('Nama lengkap', 3),

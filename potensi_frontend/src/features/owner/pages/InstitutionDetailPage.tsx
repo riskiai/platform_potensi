@@ -6,7 +6,7 @@ import { ownerKeys } from '../lib/query-keys'
 import { ConfirmDialog } from '@/components/shared/dialogs'
 import type { TenantStatus } from '@/types/owner'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, Building2, CalendarDays, Mail, Phone } from 'lucide-react'
+import { ArrowLeft, Building2, CalendarDays, Hash, Phone, UserRound } from 'lucide-react'
 import { ErrorState, LoadingState } from '@/components/shared/states'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -45,7 +45,7 @@ export function InstitutionDetailPage() {
     <div className="space-y-5">
       <PageHeader
         title={tenant.name}
-        description="Informasi tenant institusi yang tersedia dari backend."
+        description="Profil institusi dan kontak penanggung jawab."
         actions={<>
           <Button asChild variant="outline"><Link to="/owner/institusi"><ArrowLeft aria-hidden /> Kembali</Link></Button>
           {ownerService.setTenantStatus && <Button onClick={() => setConfirm(true)}>{action} institusi</Button>}
@@ -62,13 +62,20 @@ export function InstitutionDetailPage() {
         <InfoCard icon={Building2} label="Status"><StatusBadge status={tenant.status} /></InfoCard>
         <InfoCard icon={CalendarDays} label="Terdaftar"><span>{formatDate(tenant.createdAt ?? undefined)}</span></InfoCard>
         <InfoCard icon={Phone} label="Telepon"><span>{tenant.phone || 'Belum tersedia'}</span></InfoCard>
-        <InfoCard icon={Mail} label="ID Tenant"><span className="break-all font-mono text-xs">{tenant.id}</span></InfoCard>
+        <InfoCard icon={Hash} label="ID Tenant"><span className="break-all font-mono text-xs">{tenant.id}</span></InfoCard>
+        <InfoCard icon={UserRound} label="Penanggung Jawab Institusi">
+          {tenant.contact ? (
+            <div className="space-y-1 [overflow-wrap:anywhere]">
+              <p>{tenant.contact.fullName || 'Nama belum tersedia'}</p>
+              {tenant.contact.position && <p className="text-xs font-normal text-muted-foreground">{tenant.contact.position}</p>}
+              {tenant.contact.email && <p><a className="text-xs text-primary underline" href={`mailto:${tenant.contact.email}`}>{tenant.contact.email}</a></p>}
+              {tenant.contact.phone && <p><a className="text-xs text-primary underline" href={`tel:${tenant.contact.phone}`}>{tenant.contact.phone}</a></p>}
+            </div>
+          ) : <span>Belum tersedia</span>}
+        </InfoCard>
       </section>
 
-      <Card className="p-5 sm:p-6">
-        <h2 className="font-heading text-base font-bold">Catatan Data</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">Backend saat ini menyediakan nama, nomor telepon, jenis tenant, status aktif, dan tanggal pembuatan. Alamat, website, dan kontak admin belum tersedia pada endpoint detail.</p>
-      </Card>
+
     </div>
   )
 }

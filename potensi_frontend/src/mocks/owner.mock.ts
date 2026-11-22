@@ -12,7 +12,9 @@ const seedTenants: Tenant[] = [
   { id: 'tenant-1001', name: 'Universitas Nusantara', phone: '(021) 555 0101', type: 'external', status: 'active', createdAt: daysAgo(45) },
   { id: 'tenant-1002', name: 'Institut Teknologi Cendekia', phone: '(022) 555 0102', type: 'external', status: 'active', createdAt: daysAgo(27) },
   { id: 'tenant-1003', name: 'Politeknik Digital Mandiri', phone: '(031) 555 0103', type: 'external', status: 'inactive', createdAt: daysAgo(16) },
-  { id: 'tenant-1004', name: 'POTENSI Internal', phone: null, type: 'internal', status: 'active', createdAt: daysAgo(90) },
+  { id: 'tenant-1004', name: 'POTENSI Internal', phone: null, type: 'internal', status: 'active', createdAt: daysAgo(90),
+    contact: { fullName: 'Admin Internal (Demo)', position: 'Koordinator institusi', email: 'internal@potensi.test' },
+  },
 ]
 
 function readList<T>(key: string, seed: T[]): T[] {
@@ -36,6 +38,7 @@ export function mockTenantStatus(id: string, fallback: Tenant['status']) {
 function allTenants(): Tenant[] {
   const approved = registrations().filter(item => item.status === 'approved').map(item => ({
     id: item.registrationNumber, name: item.institutionName, phone: item.details?.institution.phone ?? null,
+    contact: item.details?.admin ?? { email: item.email },
     type: 'external' as const, status: 'active' as const, createdAt: item.timeline.at(-1)?.at ?? item.submittedAt,
   }))
   return [...readList(TENANTS_KEY, seedTenants), ...approved].map(item => ({ ...item, status: mockTenantStatus(item.id, item.status) }))

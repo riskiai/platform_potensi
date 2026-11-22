@@ -1,3 +1,4 @@
+import type { InstitutionRegistrationPayload } from './registration'
 import type { Paginated } from '@/types/api'
 
 export type TenantKind = 'internal' | 'external'
@@ -9,6 +10,7 @@ export interface Tenant {
   phone: string | null
   type: TenantKind
   status: TenantStatus
+  contact?: Partial<InstitutionRegistrationPayload['admin']>
   createdAt: string | null
 }
 
