@@ -35,5 +35,8 @@ chmod -R 777 storage bootstrap/cache 2>/dev/null || true
 # Run database migrations automatically
 php artisan migrate --force 2>/dev/null || true
 
+# Sync API documentation automatically
+php artisan docs:sync-api 2>/dev/null || true
+
 exec "$@"
 

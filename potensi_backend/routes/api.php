@@ -46,7 +46,3 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
-// Endpoint bawaan
-Route::get('/aplod_data', function (Request $request) {
-
-});
