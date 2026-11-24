@@ -49,7 +49,8 @@ services:
       dockerfile: Dockerfile.dev
     restart: unless-stopped
     ports:
-      - "5173:5173"
+      # Menggunakan port 5180 agar tidak bentrok dengan project Vite lain (5173/5174)
+      - "${FRONTEND_PORT:-5180}:5180"
     env_file:
       - ../potensi_frontend/.env
     volumes:

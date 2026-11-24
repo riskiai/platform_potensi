@@ -44,7 +44,7 @@ platform_potensi/
   cd potensi_frontend
   npm run dev
   ```
-  *(Berjalan di http://localhost:5173)*
+  *(Berjalan di http://localhost:5180)*
 
 ### 2. Menjalankan via Docker
 Environment dimuat otomatis dari file `.env` masing-masing platform (`potensi_backend/.env` dan `potensi_frontend/.env`).

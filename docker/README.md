@@ -29,7 +29,7 @@ docker compose -f docker-compose.dev.yml up -d --build
 ```
 
 **Akses Development:**
-- **Frontend (Live Reload)**: [http://localhost:5173](http://localhost:5173)
+- **Frontend (Live Reload)**: [http://localhost:5180](http://localhost:5180)
 - **Backend API**: [http://localhost:8000/api/ping](http://localhost:8000/api/ping)
 - **MySQL Container**: Port `3307` pada host (mencegah bentrok dengan MySQL lokal di 3306)
 
