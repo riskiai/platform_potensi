@@ -3,6 +3,7 @@ import type { AuthService } from '@/services/auth.service'
 import type { ApiError } from '@/types/api'
 import { MOCK_PASSWORD, MOCK_USERS } from './fixtures/users'
 import { mockTenantStatus } from './owner.mock'
+import { participants } from './participants.mock'
 import { registrations } from './registration.mock'
 import { delay } from './utils'
 
@@ -13,10 +14,16 @@ function users() {
     id: 'admin-' + item.registrationNumber,
     role: 'institution_admin' as const,
     name: item.details?.admin.fullName ?? item.institutionName,
+    institutionId: item.registrationNumber,
     institutionName: item.institutionName,
     email: item.email,
   }))
-  return [...MOCK_USERS, ...admins]
+  const learners = participants()
+    .filter(row => row.active && mockTenantStatus(row.institutionId, 'active') === 'active')
+    .map(({ id, name, email, institutionId, institutionName }) => ({
+      id, name, email, institutionId, institutionName, role: 'participant' as const,
+    }))
+  return [...MOCK_USERS.filter(user => user.role !== 'participant'), ...admins, ...learners]
 }
 
 export const authMockService: AuthService = {

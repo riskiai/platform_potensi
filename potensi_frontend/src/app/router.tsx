@@ -27,6 +27,14 @@ const ROLE_PHASE: Record<UserRole, string> = {
  * Saat halaman asli selesai, ganti `ModulePlaceholder` di `PAGE_OVERRIDES`.
  */
 const PAGE_LAZY: Partial<Record<string, NonNullable<RouteObject['lazy']>>> = {
+  [ROUTES.admin.settings]: async () => ({ Component: (await import('@/features/institution/pages/InstitutionSettingsPage')).InstitutionSettingsPage }),
+  [ROUTES.admin.participants]: async () => ({ Component: (await import('@/features/institution/pages/ParticipantsPage')).ParticipantsPage }),
+  [ROUTES.admin.questions]: async () => ({ Component: (await import('@/features/institution/pages/QuestionBankPage')).QuestionBankPage }),
+  [ROUTES.admin.assessments]: async () => ({ Component: (await import('@/features/institution/pages/AssessmentsPage')).AssessmentsPage }),
+  [ROUTES.admin.tracks]: async () => ({ Component: (await import('@/features/institution/pages/AcademicTracksPage')).AcademicTracksPage }),
+  [ROUTES.admin.programs]: async () => ({ Component: (await import('@/features/institution/pages/AcademicProgramsPage')).AcademicProgramsPage }),
+  [ROUTES.admin.dashboard]: async () => ({ Component: (await import('@/features/institution/pages/InstitutionDashboardPage')).InstitutionDashboardPage }),
+  [ROUTES.admin.institutionProfile]: async () => ({ Component: (await import('@/features/institution/pages/InstitutionProfilePage')).InstitutionProfilePage }),
   [ROUTES.owner.dashboard]: async () => ({ Component: (await import('@/features/owner/pages/OwnerDashboardPage')).OwnerDashboardPage }),
   [ROUTES.owner.institutionRequests]: async () => ({ Component: (await import('@/features/owner/pages/InstitutionRequestsPage')).InstitutionRequestsPage }),
   [ROUTES.owner.institutions]: async () => ({ Component: (await import('@/features/owner/pages/InstitutionsPage')).InstitutionsPage }),

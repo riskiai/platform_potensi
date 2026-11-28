@@ -3,6 +3,7 @@ import type { ApiError } from '@/types/api'
 import type { RegistrationStatusResult } from '@/types/registration'
 import type { InstitutionRegistrationPayload } from '@/types/registration'
 import type { InstitutionRequestDecision } from '@/types/owner'
+import { participants } from './participants.mock'
 import { MOCK_USERS } from './fixtures/users'
 import { delay } from './utils'
 
@@ -105,7 +106,7 @@ export const registrationMockService: RegistrationService = {
     await delay(1000)
     const all = registrations().filter(item => item.status !== 'rejected')
     const email = payload.admin.email.trim().toLowerCase()
-    if (MOCK_USERS.some(user => user.email === email) || all.some(item => item.email === email)) {
+    if (MOCK_USERS.some(user => user.role !== 'participant' && user.email === email) || participants().some(user => user.email === email) || all.some(item => item.email === email)) {
       throw { message: 'Email sudah digunakan.', fieldErrors: { 'admin.email': ['Gunakan email admin yang belum terdaftar.'] } }
     }
     if (all.some((r) => r.institutionName.toLowerCase() === payload.institution.name.trim().toLowerCase())) {

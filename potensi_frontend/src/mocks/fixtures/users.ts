@@ -18,6 +18,7 @@ export const MOCK_USERS: AuthUser[] = [
     name: 'Admin Institusi (Demo)',
     email: 'admin@kampus.test',
     role: 'institution_admin',
+    institutionId: 'kampus-demo',
     institutionName: 'Universitas Demo',
   },
   {
@@ -25,6 +26,7 @@ export const MOCK_USERS: AuthUser[] = [
     name: 'Peserta (Demo)',
     email: 'peserta@kampus.test',
     role: 'participant',
+    institutionId: 'kampus-demo',
     institutionName: 'Universitas Demo',
   },
 ]
